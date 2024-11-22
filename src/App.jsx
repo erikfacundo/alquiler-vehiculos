@@ -1,14 +1,20 @@
 // src/App.jsx
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './componentes/Navbar';
-import PiePagina from './componentes/PiePagina';
-import Login from './componentes/Login';
-import Inicio from './paginas/Inicio';
-import VehiculosDisponibles from './paginas/VehiculosDisponibles';
-import Nosotros from './paginas/Nosotros';
-import Contacto from './paginas/Contacto';
-import PanelControl from './paginas/PanelControl';
+import React, { useState } from "react";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
+import Login from "./componentes/Login";
+import Navbar from "./componentes/Navbar";
+import PiePagina from "./componentes/PiePagina";
+import Registro from "./componentes/Registro";
+import Contacto from "./paginas/Contacto";
+import Inicio from "./paginas/Inicio";
+import Nosotros from "./paginas/Nosotros";
+import PanelControl from "./paginas/PanelControl";
+import VehiculosDisponibles from "./paginas/VehiculosDisponibles";
 
 function App() {
   // Estado para manejar la autenticación del usuario
@@ -34,9 +40,13 @@ function App() {
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login login={login} />} />
+          <Route path="/registro" element={<Registro />} />
 
           {/* Rutas privadas protegidas */}
-          <Route path="/panel-control" element={<PrivateRoute element={<PanelControl />} />} />
+          <Route
+            path="/panel-control"
+            element={<PrivateRoute element={<PanelControl />} />}
+          />
         </Routes>
       </div>
       <PiePagina />

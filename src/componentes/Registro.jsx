@@ -1,21 +1,12 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
-
-const Login = () => {
-  const handleLogin = (e) => {
-    e.preventDefault();
-    Swal.fire("Inicio de sesión", "Usuario autenticado con éxito", "success");
-  };
-
+const Registro = () => {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <form
-        onSubmit={handleLogin}
+        action=""
         className="p-4 shadow rounded text-center"
         style={{ width: "350px", backgroundColor: "#f8f9fa" }}
       >
-        <h2 className="mb-4">Iniciar Sesión</h2>
+        <h2 className="mb-4">Crear Usuario</h2>
 
         <div className="mb-3 text-start">
           <label htmlFor="usuario" className="form-label">
@@ -44,14 +35,11 @@ const Login = () => {
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          Ingresar
+          Registrarse
         </button>
-        <p>
-          ¿No tienes usuario?<Link to="/register">Registrarme ahora</Link>
-        </p>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default Registro;
