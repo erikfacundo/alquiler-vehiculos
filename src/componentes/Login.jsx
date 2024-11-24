@@ -1,11 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const handleLogin = (e) => {
     e.preventDefault();
-    Swal.fire("Inicio de sesión", "Usuario autenticado con éxito", "success");
+
+    // Obtener usuarios desde localStorage
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    // Validar credenciales
+    const usuarioValido = usuarios.find(
+      (usuario) => usuario.email === email && usuario.password === password
+    );
+
+    if (usuarioValido) {
+      // Almacenar el usuario autenticado en localStorage
+      localStorage.setItem("currentUser", JSON.stringify(usuarioValido));
+
+      // Mostrar mensaje de éxito
+      Swal.fire(
+        "Inicio de sesión",
+        `¡Bienvenido, ${usuarioValido.usuario}!`,
+        "success"
+      );
+
+      // Redirigir o actualizar el estado global según tu lógica
+      window.location.href = "/";
+    } else {
+      // Mostrar mensaje de error
+      Swal.fire(
+        "Error de inicio de sesión",
+        "Email o contraseña incorrectos. Por favor, verifica tus datos.",
+        "error"
+      );
+    }
   };
 
   return (
@@ -18,14 +50,16 @@ const Login = () => {
         <h2 className="mb-4">Iniciar Sesión</h2>
 
         <div className="mb-3 text-start">
-          <label htmlFor="usuario" className="form-label">
-            Usuario
+          <label htmlFor="email" className="form-label">
+            Email
           </label>
           <input
-            type="text"
-            id="usuario"
+            type="email"
+            id="email"
             className="form-control"
-            placeholder="Ingresa tu usuario"
+            placeholder="Ingresa tu email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -39,6 +73,8 @@ const Login = () => {
             id="password"
             className="form-control"
             placeholder="Ingresa tu contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
@@ -46,8 +82,8 @@ const Login = () => {
         <button type="submit" className="btn btn-primary w-100">
           Ingresar
         </button>
-        <p>
-          ¿No tienes usuario?<Link to="/registro">Registrarme ahora</Link>
+        <p className="mt-3">
+          ¿No tienes usuario? <Link to="/registro">Registrarme ahora</Link>
         </p>
       </form>
     </div>

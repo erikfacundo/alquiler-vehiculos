@@ -17,15 +17,12 @@ import PanelControl from "./paginas/PanelControl";
 import VehiculosDisponibles from "./paginas/VehiculosDisponibles";
 
 function App() {
-  // Estado para manejar la autenticación del usuario
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Función para manejar el login, por ejemplo, en Login.jsx
   const login = () => {
     setIsAuthenticated(true);
   };
 
-  // Componente de ruta privada para proteger páginas como el PanelControl
   const PrivateRoute = ({ element }) => {
     return isAuthenticated ? element : <Navigate to="/login" />;
   };
@@ -42,7 +39,6 @@ function App() {
           <Route path="/login" element={<Login login={login} />} />
           <Route path="/registro" element={<Registro />} />
 
-          {/* Rutas privadas protegidas */}
           <Route
             path="/panel-control"
             element={<PrivateRoute element={<PanelControl />} />}

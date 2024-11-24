@@ -1,8 +1,59 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+
 const Registro = () => {
+  const [dataForm, setDataForm] = useState({
+    usuario: "",
+    password: "",
+    email: "",
+    isAdmin: false,
+  });
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setDataForm({
+      ...dataForm,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const usuariosExistentes =
+      JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    localStorage.setItem(
+      "usuarios",
+      JSON.stringify([...usuariosExistentes, dataForm])
+    );
+
+    console.log("Usuario Registrado:", dataForm);
+
+    Swal.fire({
+      title: "Registro Exitoso",
+      text: "Usuario registrado exitosamente. Ahora puedes iniciar sesión.",
+      icon: "success",
+      confirmButtonText: "Ir al Login",
+    }).then(() => {
+      navigate("/login");
+    });
+
+    setDataForm({
+      usuario: "",
+      password: "",
+      email: "",
+      isAdmin: false,
+    });
+  };
+
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <form
-        action=""
+        onSubmit={handleSubmit}
         className="p-4 shadow rounded text-center"
         style={{ width: "350px", backgroundColor: "#f8f9fa" }}
       >
@@ -15,6 +66,9 @@ const Registro = () => {
           <input
             type="text"
             id="usuario"
+            name="usuario"
+            value={dataForm.usuario}
+            onChange={handleChange}
             className="form-control"
             placeholder="Ingresa tu usuario"
             required
@@ -28,10 +82,41 @@ const Registro = () => {
           <input
             type="password"
             id="password"
+            name="password"
+            value={dataForm.password}
+            onChange={handleChange}
             className="form-control"
             placeholder="Ingresa tu contraseña"
             required
           />
+        </div>
+
+        <div className="mb-3 text-start">
+          <label htmlFor="email" className="form-label">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={dataForm.email}
+            onChange={handleChange}
+            className="form-control"
+            placeholder="Ingresa tu email"
+            required
+          />
+        </div>
+
+        <div>
+          <input
+            type="checkbox"
+            name="isAdmin"
+            checked={dataForm.isAdmin}
+            onChange={handleChange}
+          />
+          <label htmlFor="isAdmin" className="form-label">
+            ¿Perfil Administrador?
+          </label>
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
