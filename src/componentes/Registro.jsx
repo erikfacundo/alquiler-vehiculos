@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios"; // Necesitarás instalar axios para hacer peticiones HTTP
 
 const Registro = () => {
   const [dataForm, setDataForm] = useState({
@@ -20,34 +21,39 @@ const Registro = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const usuariosExistentes =
-      JSON.parse(localStorage.getItem("usuarios")) || [];
+    try {
+      // Enviar los datos al servidor
+      const response = await axios.post("http://localhost:5000/registro", dataForm);
 
-    localStorage.setItem(
-      "usuarios",
-      JSON.stringify([...usuariosExistentes, dataForm])
-    );
+      console.log("Respuesta del servidor:", response.data);
 
-    console.log("Usuario Registrado:", dataForm);
+      Swal.fire({
+        title: "Registro Exitoso",
+        text: "Usuario registrado exitosamente. Ahora puedes iniciar sesión.",
+        icon: "success",
+        confirmButtonText: "Ir al Login",
+      }).then(() => {
+        navigate("/login");
+      });
 
-    Swal.fire({
-      title: "Registro Exitoso",
-      text: "Usuario registrado exitosamente. Ahora puedes iniciar sesión.",
-      icon: "success",
-      confirmButtonText: "Ir al Login",
-    }).then(() => {
-      navigate("/login");
-    });
-
-    setDataForm({
-      usuario: "",
-      password: "",
-      email: "",
-      isAdmin: false,
-    });
+      // Limpiar el formulario después de un registro exitoso
+      setDataForm({
+        usuario: "",
+        password: "",
+        email: "",
+        isAdmin: false,
+      });
+    } catch (error) {
+      console.error("Error al registrar usuario:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al registrar el usuario.",
+        icon: "error",
+      });
+    }
   };
 
   return (
@@ -107,7 +113,7 @@ const Registro = () => {
           />
         </div>
 
-        <div>
+{/*         <div>
           <input
             type="checkbox"
             name="isAdmin"
@@ -117,7 +123,7 @@ const Registro = () => {
           <label htmlFor="isAdmin" className="form-label">
             ¿Perfil Administrador?
           </label>
-        </div>
+        </div> */}
 
         <button type="submit" className="btn btn-primary w-100">
           Registrarse

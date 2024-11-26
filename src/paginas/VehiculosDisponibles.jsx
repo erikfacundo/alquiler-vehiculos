@@ -5,14 +5,14 @@ import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import Swal from "sweetalert2";
-import vehiculos from "../data/vehiculos";
+// Importa el archivo JSON
+import vehiculos from "../data/vehiculos.json";
 
 const VehiculosDisponibles = () => {
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState([]);
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
   const [inicioAlquiler, setInicioAlquiler] = useState(dayjs());
   const [finAlquiler, setFinAlquiler] = useState(dayjs().add(1, "hour"));
-  const [costoSimulado, setCostoSimulado] = useState(0);
 
   useEffect(() => {
     setVehiculosDisponibles(vehiculos);
@@ -59,6 +59,12 @@ const VehiculosDisponibles = () => {
             {vehiculosDisponibles.map((vehiculo) => (
               <Col md={4} key={vehiculo.id} className="mb-4">
                 <Card>
+                  {/* Cartel de "Alquilado" si el vehículo no está disponible */}
+                  {!vehiculo.disponible && (
+                    <div className="position-absolute top-0 start-0 bg-danger text-white p-2">
+                      Alquilado
+                    </div>
+                  )}
                   <Card.Img
                     variant="top"
                     src={vehiculo.imagenes[0]}
@@ -71,8 +77,9 @@ const VehiculosDisponibles = () => {
                       variant="primary"
                       onClick={() => handleSeleccionarVehiculo(vehiculo)}
                       className="w-100"
+                      disabled={!vehiculo.disponible} // Deshabilitar el botón si está alquilado
                     >
-                      Ver Detalles
+                      {vehiculo.disponible ? "Ver Detalles" : "Alquilado"}
                     </Button>
                   </Card.Body>
                 </Card>
@@ -99,8 +106,7 @@ const VehiculosDisponibles = () => {
                 <strong>Descripción:</strong> {vehiculoSeleccionado.descripcion}
               </p>
               <p>
-                <strong>Costo por hora:</strong> $
-                {vehiculoSeleccionado.costoPorHora}
+                <strong>Costo por hora:</strong> $ {vehiculoSeleccionado.costoPorHora}
               </p>
 
               <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -1,10 +1,9 @@
-// src/App.jsx
 import React, { useState } from "react";
 import {
   Navigate,
-  Route,
   BrowserRouter as Router,
   Routes,
+  Route,
 } from "react-router-dom";
 import Login from "./componentes/Login";
 import Navbar from "./componentes/Navbar";
@@ -17,14 +16,17 @@ import PanelControl from "./paginas/PanelControl";
 import VehiculosDisponibles from "./paginas/VehiculosDisponibles";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
 
-  const login = () => {
-    setIsAuthenticated(true);
+  const login = (usuario) => {
+    if (usuario.isAdmin) {
+      setUsuarioLogueado(usuario);
+    }
   };
 
-  const PrivateRoute = ({ element }) => {
-    return isAuthenticated ? element : <Navigate to="/login" />;
+  // PrivateRoute ahora recibe children y no element
+  const PrivateRoute = ({ children }) => {
+    return usuarioLogueado ? children : <Navigate to="/login" />;
   };
 
   return (
@@ -38,10 +40,15 @@ function App() {
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login login={login} />} />
           <Route path="/registro" element={<Registro />} />
-
+          
+          {/* Aquí pasas el componente PanelControl como children */}
           <Route
-            path="/panel-control"
-            element={<PrivateRoute element={<PanelControl />} />}
+            path="/panelcontrol"
+            element={
+              <PrivateRoute>
+                <PanelControl />
+              </PrivateRoute>
+            }
           />
         </Routes>
       </div>

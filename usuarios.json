@@ -1,0 +1,28 @@
+[
+  {
+    "usuario": "usuario1",
+    "email": "usuario1@example.com",
+    "password": "password123",
+    "isAdmin": false
+  },
+  {
+    "usuario": "usuario2",
+    "email": "usuario2@example.com",
+    "password": "password456",
+    "isAdmin": true
+  },
+  {
+    "usuario": "Erik",
+    "password": "asdasd",
+    "email": "florfacundoerik@gmail.com",
+    "isAdmin": true
+  },
+  {
+    "usuario": "test",
+    "password": "asdasd",
+    "email": "test@gmail.com",
+    "isAdmin": false
+  }
+ 
+ 
+]
