@@ -1,37 +1,31 @@
+// src/componentes/Login.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const Login = () => {
+const Login = ({ login }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
-
-    // Obtener usuarios desde localStorage
     const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-    // Validar credenciales
     const usuarioValido = usuarios.find(
       (usuario) => usuario.email === email && usuario.password === password
     );
 
     if (usuarioValido) {
-      // Almacenar el usuario autenticado en localStorage
-      localStorage.setItem("currentUser", JSON.stringify(usuarioValido));
+      login(usuarioValido);
 
-      // Mostrar mensaje de éxito
       Swal.fire(
         "Inicio de sesión",
         `¡Bienvenido, ${usuarioValido.usuario}!`,
         "success"
       );
-
-      // Redirigir o actualizar el estado global según tu lógica
-      window.location.href = "/";
+      navigate("/");
     } else {
-      // Mostrar mensaje de error
       Swal.fire(
         "Error de inicio de sesión",
         "Email o contraseña incorrectos. Por favor, verifica tus datos.",

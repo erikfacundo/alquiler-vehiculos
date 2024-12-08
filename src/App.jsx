@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navigate,
   Route,
@@ -17,19 +17,33 @@ import PanelControl from "./paginas/PanelControl";
 import VehiculosDisponibles from "./paginas/VehiculosDisponibles";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  const login = () => {
-    setIsAuthenticated(true);
+  useEffect(() => {
+    // Verificar si hay un usuario autenticado en el localStorage al cargar la aplicación
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const login = (user) => {
+    setCurrentUser(user);
+    localStorage.setItem("currentUser", JSON.stringify(user));
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("currentUser");
   };
 
   const PrivateRoute = ({ element }) => {
-    return isAuthenticated ? element : <Navigate to="/login" />;
+    return currentUser ? element : <Navigate to="/login" />;
   };
 
   return (
     <Router>
-      <Navbar />
+      <Navbar currentUser={currentUser} logout={logout} />
       <div className="d-flex flex-column min-vh-100">
         <Routes>
           <Route path="/" element={<Inicio />} />
@@ -38,7 +52,6 @@ function App() {
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login login={login} />} />
           <Route path="/registro" element={<Registro />} />
-
           <Route
             path="/panel-control"
             element={<PrivateRoute element={<PanelControl />} />}

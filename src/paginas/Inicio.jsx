@@ -14,9 +14,7 @@ const Inicio = () => {
       <section className="hero bg-primary text-white py-6">
         <div className="container text-center">
           <h1 className="display-4 mb-3">
-            {usuario
-              ? `Bienvenido, ${usuario.usuario}`
-              : "Bienvenidos al Alquiler de Vehículos"}
+            Bienvenidos al Alquiler de Vehículos
           </h1>
           <p className="lead mb-4">
             Explora nuestra selección de vehículos para alquilar y encuentra el

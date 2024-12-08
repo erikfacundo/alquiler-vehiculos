@@ -1,7 +1,3 @@
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import Swal from "sweetalert2";
@@ -10,21 +6,16 @@ import vehiculos from "../data/vehiculos";
 const VehiculosDisponibles = () => {
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState([]);
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
-  const [inicioAlquiler, setInicioAlquiler] = useState(dayjs());
-  const [finAlquiler, setFinAlquiler] = useState(dayjs().add(1, "hour"));
-  const [costoSimulado, setCostoSimulado] = useState(0);
+  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
 
   useEffect(() => {
-    setVehiculosDisponibles(vehiculos);
+    const vehiculosGuardados =
+      JSON.parse(localStorage.getItem("vehiculos")) || vehiculos;
+    setVehiculosDisponibles(vehiculosGuardados);
+
+    const usuario = JSON.parse(localStorage.getItem("currentUser"));
+    setUsuarioLogueado(usuario);
   }, []);
-
-  useEffect(() => {
-    if (vehiculoSeleccionado) {
-      const horasAlquiler = finAlquiler.diff(inicioAlquiler, "hour");
-      const costo = horasAlquiler * vehiculoSeleccionado.costoPorHora;
-      setCostoSimulado(costo);
-    }
-  }, [inicioAlquiler, finAlquiler, vehiculoSeleccionado]);
 
   const handleSeleccionarVehiculo = (vehiculo) => {
     setVehiculoSeleccionado(vehiculo);
@@ -32,22 +23,52 @@ const VehiculosDisponibles = () => {
 
   const handleVolver = () => {
     setVehiculoSeleccionado(null);
-    setCostoSimulado(0);
   };
 
-  const handleAlquilar = () => {
-    Swal.fire({
-      title: "Iniciar sesión",
-      text: "Para alquilar un vehículo, debes iniciar sesión.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Iniciar sesión",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = "/login";
-      }
-    });
+  const handleAlquilar = (vehiculo) => {
+    if (!usuarioLogueado) {
+      Swal.fire({
+        title: "Iniciar sesión",
+        text: "Para alquilar un vehículo, debes iniciar sesión.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Iniciar sesión",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/login";
+        }
+      });
+      return;
+    }
+
+    const vehiculosActualizados = vehiculosDisponibles.map((v) =>
+      v.id === vehiculo.id ? { ...v, disponible: false } : v
+    );
+    setVehiculosDisponibles(vehiculosActualizados);
+    localStorage.setItem("vehiculos", JSON.stringify(vehiculosActualizados));
+
+    Swal.fire(
+      "Alquiler Exitoso",
+      `Has alquilado el vehículo ${vehiculo.modelo} con éxito.`,
+      "success"
+    );
+    setVehiculoSeleccionado(null);
+  };
+
+  const handleRestablecerDisponibilidad = (vehiculo) => {
+    const vehiculosActualizados = vehiculosDisponibles.map((v) =>
+      v.id === vehiculo.id ? { ...v, disponible: true } : v
+    );
+    setVehiculosDisponibles(vehiculosActualizados);
+    localStorage.setItem("vehiculos", JSON.stringify(vehiculosActualizados));
+
+    Swal.fire(
+      "Disponibilidad Restablecida",
+      `El vehículo ${vehiculo.modelo} ha sido marcado como disponible.`,
+      "success"
+    );
+    setVehiculoSeleccionado(null);
   };
 
   return (
@@ -82,6 +103,9 @@ const VehiculosDisponibles = () => {
         </div>
       ) : (
         <div className="vehiculo-detalle my-5">
+          <Button variant="secondary" onClick={handleVolver} className="mb-3">
+            Volver
+          </Button>
           <Row>
             <Col
               md={6}
@@ -102,45 +126,6 @@ const VehiculosDisponibles = () => {
                 <strong>Costo por hora:</strong> $
                 {vehiculoSeleccionado.costoPorHora}
               </p>
-
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Row className="my-4">
-                  <Col md={6} xs={12} className="mb-3">
-                    <DateTimePicker
-                      label="Inicio de Alquiler"
-                      value={inicioAlquiler}
-                      onChange={(newValue) => setInicioAlquiler(newValue)}
-                      renderInput={(params) => (
-                        <input {...params} className="form-control my-2" />
-                      )}
-                    />
-                  </Col>
-                  <Col md={6} xs={12} className="mb-3">
-                    <DateTimePicker
-                      label="Fin de Alquiler"
-                      value={finAlquiler}
-                      onChange={(newValue) => setFinAlquiler(newValue)}
-                      renderInput={(params) => (
-                        <input {...params} className="form-control my-2" />
-                      )}
-                    />
-                  </Col>
-                </Row>
-              </LocalizationProvider>
-
-              {costoSimulado > 0 && (
-                <p>
-                  <strong>Costo Total:</strong> ${costoSimulado}
-                </p>
-              )}
-
-              <Button
-                variant="danger"
-                onClick={handleAlquilar}
-                className="w-100"
-              >
-                Alquilar Vehículo
-              </Button>
 
               <div className="mt-4">
                 <h4>Detalles del Vehículo</h4>
@@ -169,6 +154,33 @@ const VehiculosDisponibles = () => {
                   </tbody>
                 </Table>
               </div>
+
+              {vehiculoSeleccionado.disponible ? (
+                <Button
+                  variant="success"
+                  onClick={() => handleAlquilar(vehiculoSeleccionado)}
+                  className="w-100"
+                >
+                  Alquilar Vehículo
+                </Button>
+              ) : (
+                <div>
+                  <Button variant="secondary" className="w-100 mb-2" disabled>
+                    No Disponible
+                  </Button>
+                  {usuarioLogueado && usuarioLogueado.isAdmin && (
+                    <Button
+                      variant="warning"
+                      onClick={() =>
+                        handleRestablecerDisponibilidad(vehiculoSeleccionado)
+                      }
+                      className="w-100"
+                    >
+                      Marcar como Disponible
+                    </Button>
+                  )}
+                </div>
+              )}
             </Col>
           </Row>
         </div>

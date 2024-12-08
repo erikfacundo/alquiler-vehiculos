@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from "react";
+// src/componentes/Navbar.jsx
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = () => {
-  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
+const Navbar = ({ currentUser, logout }) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    setUsuarioLogueado(currentUser);
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    setUsuarioLogueado(null);
+    logout();
     navigate("/");
   };
 
@@ -57,21 +51,28 @@ const Navbar = () => {
                 Contacto
               </Link>
             </li>
-            <li className="nav-item">
-              {usuarioLogueado ? (
-                <button
-                  className="btn btn-link nav-link"
-                  onClick={handleLogout}
-                  style={{ cursor: "pointer", textDecoration: "none" }}
-                >
-                  Cerrar Sesión
-                </button>
-              ) : (
+            {currentUser ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link">Perfil</span>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className="btn btn-link nav-link"
+                    onClick={handleLogout}
+                    style={{ cursor: "pointer", textDecoration: "none" }}
+                  >
+                    Cerrar Sesión
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item">
                 <Link className="nav-link" to="/login">
                   Login
                 </Link>
-              )}
-            </li>
+              </li>
+            )}
           </ul>
         </div>
       </div>
