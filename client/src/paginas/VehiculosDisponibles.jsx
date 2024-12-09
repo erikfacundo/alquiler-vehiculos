@@ -1,7 +1,7 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import Swal from "sweetalert2";
-import vehiculos from "../data/vehiculos";
 
 const VehiculosDisponibles = () => {
   const [vehiculosDisponibles, setVehiculosDisponibles] = useState([]);
@@ -9,9 +9,21 @@ const VehiculosDisponibles = () => {
   const [usuarioLogueado, setUsuarioLogueado] = useState(null);
 
   useEffect(() => {
-    const vehiculosGuardados =
-      JSON.parse(localStorage.getItem("vehiculos")) || vehiculos;
-    setVehiculosDisponibles(vehiculosGuardados);
+    // Consumir datos desde el backend
+    axios
+      .get("http://localhost:3000/api/vehiculos") // Cambia la URL por la de tu backend
+      .then((response) => {
+        setVehiculosDisponibles(response.data);
+        console.log(response.data); // Asigna los datos del backend al estado
+      })
+      .catch((error) => {
+        console.error("Error al cargar los datos de vehículos:", error);
+        Swal.fire(
+          "Error",
+          "Hubo un problema al cargar los datos de vehículos. Intenta nuevamente.",
+          "error"
+        );
+      });
 
     const usuario = JSON.parse(localStorage.getItem("currentUser"));
     setUsuarioLogueado(usuario);
@@ -46,7 +58,6 @@ const VehiculosDisponibles = () => {
       v.id === vehiculo.id ? { ...v, disponible: false } : v
     );
     setVehiculosDisponibles(vehiculosActualizados);
-    localStorage.setItem("vehiculos", JSON.stringify(vehiculosActualizados));
 
     Swal.fire(
       "Alquiler Exitoso",
@@ -61,7 +72,6 @@ const VehiculosDisponibles = () => {
       v.id === vehiculo.id ? { ...v, disponible: true } : v
     );
     setVehiculosDisponibles(vehiculosActualizados);
-    localStorage.setItem("vehiculos", JSON.stringify(vehiculosActualizados));
 
     Swal.fire(
       "Disponibilidad Restablecida",
