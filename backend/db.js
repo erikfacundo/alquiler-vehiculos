@@ -1,9 +1,10 @@
+// db.js
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: '', // Asegúrate de que esta contraseña sea correcta
   database: 'alquiler_vehiculos',
   port: 3306, // Asegúrate de que este puerto coincida con el configurado en MySQL
 });

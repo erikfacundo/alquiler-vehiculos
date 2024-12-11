@@ -1,61 +1,111 @@
-const express = require("express");
-const mysql = require("mysql2");
-const cors = require("cors");
+// routes.js
+const express = require('express');
+const router = express.Router();
 const db = require('./db');
 
-// routes.js
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  next();
-});
-
-
-// Ruta para obtener los vehículos
-app.get("/vehiculos", (req, res) => {
-  const query = "SELECT * FROM vehiculos";
+// GET ALL USERS
+router.get('/usuarios', (req, res) => {
+  const query = 'SELECT id, usuario, email FROM usuarios';
   db.query(query, (err, results) => {
-      if (err) {
-          console.error("Error al obtener los datos:", err);
-          res.status(500).send("Error al obtener los datos");
-      } else {
-          res.json(results);
-      }
+    if (err) {
+      console.error('Error al obtener los usuarios:', err);
+      res.status(500).send('Error al obtener los usuarios');
+    } else {
+      res.json(results);
+    }
   });
 });
 
-// Ruta para obtener todos los usuarios
-app.get("/usuarios", (req, res) => {
-  const query = "SELECT id, usuario, email FROM usuarios";
-  db.query(query, (err, results) => {
-      if (err) {
-          console.error("Error al obtener los usuarios:", err);
-          res.status(500).send("Error al obtener los usuarios");
-      } else {
-          res.json(results);  // Devolvemos los usuarios
-      }
-  });
-});
-
-
-app.post('/register', (req, res) => {
+// POST nuevo usuario
+router.post('/register', (req, res) => {
   const { usuario, email, password, isAdmin } = req.body;
   const query = 'INSERT INTO usuarios (usuario, email, password, isAdmin) VALUES (?, ?, ?, ?)';
   db.query(query, [usuario, email, password, isAdmin || 0], (err, results) => {
     if (err) {
       console.error('Error al registrar el usuario:', err);
       res.status(500).json({ error: 'Error al registrar el usuario' });
+    } else {
+      res.status(201).json({ message: 'Usuario registrado exitosamente' });
+    }
+  });
+});
+
+// DELETE user por ID
+
+router.delete('/usuarios/:id', (req, res) => {
+  const userId = req.params.id;
+  const query = 'DELETE FROM usuarios WHERE id = ?';
+  
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error al eliminar el usuario:', err);
+      res.status(500).json({ error: 'Error al eliminar el usuario' });
       return;
     }
-    res.status(201).json({ message: 'Usuario registrado exitosamente' });
+    if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.status(200).json({ message: 'Usuario eliminado exitosamente' });
+    }
+  });
+});
+
+// UPDATE user a Admin
+
+router.put('/usuarios/:id/admin', (req, res) => {
+  const userId = req.params.id;
+  const query = 'UPDATE usuarios SET isAdmin = ? WHERE id = ?';
+
+  db.query(query, [true, userId], (err, results) => {
+    if (err) {
+      console.error('Error al actualizar el usuario:', err);
+      res.status(500).json({ error: 'Error al actualizar el usuario' });
+      return;
+    }
+    if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    } else {
+      res.status(200).json({ message: 'Usuario actualizado exitosamente' });
+    }
+  });
+});
+
+/// Rutas vehiculos
+
+// GET vehiculos
+router.get('/vehiculos', (req, res) => {
+  const query = 'SELECT * FROM vehiculos';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener los datos:', err);
+      res.status(500).send('Error al obtener los datos');
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+//Update estado vehiculo
+
+router.put('/vehiculos/:id/disponibilidad', (req, res) => {
+  const vehiculoId = req.params.id;
+  const { disponible } = req.body;
+  const query = 'UPDATE vehiculos SET disponible = ? WHERE id = ?';
+
+  db.query(query, [disponible, vehiculoId], (err, results) => {
+    if (err) {
+      console.error('Error al actualizar la disponibilidad del vehículo:', err);
+      res.status(500).json({ error: 'Error al actualizar la disponibilidad del vehículo' });
+      return;
+    }
+    if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Vehículo no encontrado' });
+    } else {
+      res.status(200).json({ message: 'Disponibilidad del vehículo actualizada exitosamente' });
+    }
   });
 });
 
 
-module.exports = app;
+
+module.exports = router;

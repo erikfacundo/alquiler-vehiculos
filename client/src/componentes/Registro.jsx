@@ -26,10 +26,10 @@ const Registro = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/register",
+        "http://localhost:3000/api/register",
         dataForm,
         {
-          withCredentials: true, // Incluye las credenciales en la solicitud si es necesario
+          withCredentials: true,
         }
       );
 
