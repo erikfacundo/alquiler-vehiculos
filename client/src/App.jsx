@@ -1,11 +1,6 @@
 // src/App.jsx
 import React, { useEffect, useState } from "react";
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Login from "./componentes/Login";
 import Navbar from "./componentes/Navbar";
 import PiePagina from "./componentes/PiePagina";
@@ -37,9 +32,9 @@ function App() {
     localStorage.removeItem("currentUser");
   };
 
-  const PrivateRoute = ({ element }) => {
-    return currentUser ? element : <Navigate to="/login" />;
-  };
+  // const PrivateRoute = ({ element }) => {
+  //   return currentUser ? element : <Navigate to="/login" />;
+  // };
 
   return (
     <Router>
@@ -52,10 +47,7 @@ function App() {
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login login={login} />} />
           <Route path="/registro" element={<Registro />} />
-          <Route
-            path="/panel-control"
-            element={<PrivateRoute element={<PanelControl />} />}
-          />
+          <Route path="/panel-control" element={<PanelControl />} />
         </Routes>
       </div>
       <PiePagina />

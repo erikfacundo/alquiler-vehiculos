@@ -63,56 +63,8 @@ router.post('/login', (req, res) => {
   });
 });
 
-// GET ALL USERS (protegido)
-router.get('/usuarios', verifyToken, (req, res) => {
-  const query = 'SELECT id, usuario, email FROM usuarios';
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error('Error al obtener los usuarios:', err);
-      res.status(500).send('Error al obtener los usuarios');
-    } else {
-      res.json(results);
-    }
-  });
-});
 
-// DELETE user por ID (protegido)
-router.delete('/usuarios/:id', verifyToken, (req, res) => {
-  const userId = req.params.id;
-  const query = 'DELETE FROM usuarios WHERE id = ?';
-  
-  db.query(query, [userId], (err, results) => {
-    if (err) {
-      console.error('Error al eliminar el usuario:', err);
-      res.status(500).json({ error: 'Error al eliminar el usuario' });
-      return;
-    }
-    if (results.affectedRows === 0) {
-      res.status(404).json({ message: 'Usuario no encontrado' });
-    } else {
-      res.status(200).json({ message: 'Usuario eliminado exitosamente' });
-    }
-  });
-});
 
-// UPDATE user a Admin (protegido)
-router.put('/usuarios/:id/admin', verifyToken, (req, res) => {
-  const userId = req.params.id;
-  const query = 'UPDATE usuarios SET isAdmin = ? WHERE id = ?';
-
-  db.query(query, [true, userId], (err, results) => {
-    if (err) {
-      console.error('Error al actualizar el usuario:', err);
-      res.status(500).json({ error: 'Error al actualizar el usuario' });
-      return;
-    }
-    if (results.affectedRows === 0) {
-      res.status(404).json({ message: 'Usuario no encontrado' });
-    } else {
-      res.status(200).json({ message: 'Usuario actualizado exitosamente' });
-    }
-  });
-});
 
 // Rutas vehículos
 
@@ -129,8 +81,9 @@ router.get('/vehiculos', (req, res) => {
   });
 });
 
+
 // Update estado vehículo (protegido)
-router.put('/vehiculos/:id/disponibilidad', verifyToken, (req, res) => {
+router.put('/vehiculos/:id/disponibilidad', (req, res) => {
   const vehiculoId = req.params.id;
   const { disponible } = req.body;
   const query = 'UPDATE vehiculos SET disponible = ? WHERE id = ?';
@@ -148,5 +101,6 @@ router.put('/vehiculos/:id/disponibilidad', verifyToken, (req, res) => {
     }
   });
 });
+
 
 module.exports = router;
