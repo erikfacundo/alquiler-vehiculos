@@ -60,8 +60,8 @@ const VehiculosDisponibles = () => {
     setVehiculosDisponibles(vehiculosActualizados);
 
     Swal.fire(
-      "Alquiler Exitoso",
-      `Has alquilado el vehículo ${vehiculo.modelo} con éxito.`,
+      "Solicitud de alquiler enviada",
+      `Su solicitud fue enviada con exito ${vehiculo.modelo} con éxito.`,
       "success"
     );
     setVehiculoSeleccionado(null);
@@ -92,7 +92,7 @@ const VehiculosDisponibles = () => {
                 <Card>
                   <Card.Img
                     variant="top"
-                    src={vehiculo.imagenes[0]}
+                    src="./assets/vehicles/toyota/corolla.png"
                     className="img-fluid"
                   />
                   <Card.Body>

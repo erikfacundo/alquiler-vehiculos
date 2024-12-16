@@ -68,6 +68,52 @@ router.post('/login', (req, res) => {
 
 // Rutas vehículos
 
+// Ruta para crear un nuevo vehículo
+// Ruta para crear un vehículo
+router.post('/vehiculos', (req, res) => {
+  const {
+    modelo,
+    descripcion,
+    costoPorHora,
+    potencia,
+    consumo,
+    comodidades,
+    pros,
+    contras,
+    disponible,
+    imagenes
+  } = req.body;
+
+  const query =
+    'INSERT INTO vehiculos (modelo, descripcion, costoPorHora, potencia, consumo, comodidades, pros, contras, disponible, imagenes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+  db.query(
+    query,
+    [
+      modelo,
+      descripcion,
+      costoPorHora,
+      potencia,
+      consumo,
+      comodidades,
+      pros,
+      contras,
+      disponible,
+      imagenes
+    ],
+    (err, results) => {
+      if (err) {
+        console.error('Error al crear el vehículo:', err);
+        res.status(500).json({ error: 'Error al crear el vehículo' });
+        return;
+      }
+      res.status(201).json({ message: 'Vehículo creado exitosamente' });
+    }
+  );
+});
+
+
+
 // GET vehículos
 router.get('/vehiculos', (req, res) => {
   const query = 'SELECT * FROM vehiculos';
@@ -98,6 +144,24 @@ router.put('/vehiculos/:id/disponibilidad', (req, res) => {
       res.status(404).json({ message: 'Vehículo no encontrado' });
     } else {
       res.status(200).json({ message: 'Disponibilidad del vehículo actualizada exitosamente' });
+    }
+  });
+});
+
+router.delete('/vehiculos/:id',  (req, res) => {
+  const vehiculoId = req.params.id;
+  const query = 'DELETE FROM vehiculos WHERE id = ?';
+
+  db.query(query, [vehiculoId], (err, results) => {
+    if (err) {
+      console.error('Error al eliminar el vehículo:', err);
+      res.status(500).json({ error: 'Error al eliminar el vehículo' });
+      return;
+    }
+    if (results.affectedRows === 0) {
+      res.status(404).json({ message: 'Vehículo no encontrado' });
+    } else {
+      res.status(200).json({ message: 'Vehículo eliminado exitosamente' });
     }
   });
 });
