@@ -61,7 +61,7 @@ const VehiculosDisponibles = () => {
 
     Swal.fire(
       "Solicitud de alquiler enviada",
-      `Su solicitud fue enviada con exito ${vehiculo.modelo} con éxito.`,
+      `Su solicitud fue enviada con éxito para el vehículo ${vehiculo.modelo}.`,
       "success"
     );
     setVehiculoSeleccionado(null);
@@ -89,12 +89,19 @@ const VehiculosDisponibles = () => {
           <Row>
             {vehiculosDisponibles.map((vehiculo) => (
               <Col md={4} key={vehiculo.id} className="mb-4">
-                <Card>
+                <Card className="position-relative">
                   <Card.Img
                     variant="top"
                     src={`/src/assets/vehicles/${vehiculo.id}/${vehiculo.imagenes}`}
-                    className="img-fluid"
+                    className={`img-fluid ${
+                      !vehiculo.disponible && "opacity-50"
+                    }`}
                   />
+                  {!vehiculo.disponible && (
+                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-danger bg-opacity-75">
+                      <h4 className="text-white">Vehículo Alquilado</h4>
+                    </div>
+                  )}
                   <Card.Body>
                     <Card.Title>{vehiculo.modelo}</Card.Title>
                     <Card.Text>{vehiculo.descripcion}</Card.Text>
@@ -102,6 +109,7 @@ const VehiculosDisponibles = () => {
                       variant="primary"
                       onClick={() => handleSeleccionarVehiculo(vehiculo)}
                       className="w-100"
+                      disabled={!vehiculo.disponible}
                     >
                       Ver Detalles
                     </Button>

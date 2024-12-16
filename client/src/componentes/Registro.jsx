@@ -119,19 +119,7 @@ const Registro = () => {
           />
         </div>
 
-        <div className="mb-3 text-start">
-          <input
-            type="checkbox"
-            id="isAdmin"
-            name="isAdmin"
-            checked={dataForm.isAdmin}
-            onChange={handleChange}
-            className="form-check-input"
-          />
-          <label htmlFor="isAdmin" className="form-check-label ms-2">
-            ¿Perfil Administrador?
-          </label>
-        </div>
+
 
         <button type="submit" className="btn btn-primary w-100">
           Registrarse

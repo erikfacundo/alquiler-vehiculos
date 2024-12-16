@@ -175,3 +175,26 @@ footer p {
     margin-bottom: 20px;
   }
 }
+
+
+
+.card-no-disponible {
+  filter: brightness(0.5); /* Oscurece la tarjeta */
+  position: relative;
+  pointer-events: none; /* Deshabilita interacciones */
+}
+
+.franja-roja {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  padding: 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  z-index: 1;
+}

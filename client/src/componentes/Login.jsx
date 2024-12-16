@@ -1,48 +1,63 @@
 // src/componentes/Login.jsx
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
 
-const Login = ({ login }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-    const usuarioValido = usuarios.find(
-      (usuario) => usuario.email === email && usuario.password === password
-    );
-
-    if (usuarioValido) {
-      login(usuarioValido);
-
-      Swal.fire(
-        "Inicio de sesión",
-        `¡Bienvenido, ${usuarioValido.usuario}!`,
-        "success"
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/login",
+        { email, password }
       );
-      navigate("/");
-    } else {
-      Swal.fire(
-        "Error de inicio de sesión",
-        "Email o contraseña incorrectos. Por favor, verifica tus datos.",
-        "error"
-      );
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token); // Guarda el token
+        localStorage.setItem("username", response.data.username); // Guarda el nombre
+        localStorage.setItem("isAdmin", response.data.isAdmin); // Guarda si es admin
+
+        Swal.fire({
+          title: "Bienvenido",
+          text: "Inicio de sesión exitoso.",
+          icon: "success",
+          confirmButtonText: "Ir al inicio",
+        }).then(() => {
+          navigate("/"); // Redirige a la página principal
+        });
+      } else {
+        Swal.fire({
+          title: "Error en el inicio de sesión",
+          text: "Email o contraseña incorrectos.",
+          icon: "error",
+          confirmButtonText: "Intentar de nuevo",
+        });
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      Swal.fire({
+        title: "Error en el inicio de sesión",
+        text: "Ocurrió un error al intentar iniciar sesión.",
+        icon: "error",
+        confirmButtonText: "Intentar de nuevo",
+      });
     }
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <form
-        onSubmit={handleLogin}
+        onSubmit={handleSubmit}
         className="p-4 shadow rounded text-center"
         style={{ width: "350px", backgroundColor: "#f8f9fa" }}
       >
         <h2 className="mb-4">Iniciar Sesión</h2>
-
         <div className="mb-3 text-start">
           <label htmlFor="email" className="form-label">
             Email
@@ -57,7 +72,6 @@ const Login = ({ login }) => {
             required
           />
         </div>
-
         <div className="mb-3 text-start">
           <label htmlFor="password" className="form-label">
             Contraseña
@@ -72,13 +86,9 @@ const Login = ({ login }) => {
             required
           />
         </div>
-
         <button type="submit" className="btn btn-primary w-100">
           Ingresar
         </button>
-        <p className="mt-3">
-          ¿No tienes usuario? <Link to="/registro">Registrarme ahora</Link>
-        </p>
       </form>
     </div>
   );
