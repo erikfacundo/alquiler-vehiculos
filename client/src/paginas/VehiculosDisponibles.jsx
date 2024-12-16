@@ -92,7 +92,7 @@ const VehiculosDisponibles = () => {
                 <Card>
                   <Card.Img
                     variant="top"
-                    src="./assets/vehicles/toyota/corolla.png"
+                    src={`/src/assets/vehicles/${vehiculo.id}/${vehiculo.imagenes}`}
                     className="img-fluid"
                   />
                   <Card.Body>
@@ -122,7 +122,7 @@ const VehiculosDisponibles = () => {
               className="d-flex justify-content-center align-items-center"
             >
               <img
-                src={vehiculoSeleccionado.imagenes[0]}
+                src={`/src/assets/vehicles/${vehiculoSeleccionado.id}/${vehiculoSeleccionado.imagenes}`}
                 alt={vehiculoSeleccionado.modelo}
                 className="img-fluid mb-4"
               />
